@@ -30,7 +30,16 @@ writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
 df_diff.to_excel(writer, sheet_name='diff', index=False)
 df1.to_excel(writer, sheet_name='df1', index=False)
 df2.to_excel(writer, sheet_name='df2', index=False)
-writer.save()
 
+
+workbook  = writer.book
+worksheet = writer.sheets['diff']
+# worksheet.hide_gridlines(2)
+highlighter_fmt = workbook.add_format({'font_color': '#FF0000', 'bg_color':'#FFFF00'})
+worksheet.conditional_format('A1:ZZ1000000', {'type': 'text',
+    'criteria': 'containing',
+    'value':'-->',
+    'format': highlighter_fmt})
+writer.save()
 
 # %%
