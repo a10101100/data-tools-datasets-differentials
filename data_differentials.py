@@ -18,14 +18,19 @@ df1.equals(df2)
 cmp_val = df1.values == df2.values
 rows,cols=np.where(cmp_val==False)
 
+df_diff = df1.copy()
 for item in zip(rows,cols):
-    df1.iloc[item[0], item[1]] = '{} --> {}'.format(df1.iloc[item[0], item[1]],df2.iloc[item[0], item[1]])
+    df_diff.iloc[item[0], item[1]] = '{} --> {}'.format(df1.iloc[item[0], item[1]],df2.iloc[item[0], item[1]])
 
 # %%
 output_file = 'dataset_differentials_' + datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p") + '.xlsx'
 output_file = join(output_path,output_file)
-df1.to_excel(output_file,index=False,header=True)
 
+writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
+df_diff.to_excel(writer, sheet_name='diff', index=False)
+df1.to_excel(writer, sheet_name='df1', index=False)
+df2.to_excel(writer, sheet_name='df2', index=False)
+writer.save()
 
 
 # %%
