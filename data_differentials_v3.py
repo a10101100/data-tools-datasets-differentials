@@ -72,13 +72,13 @@ output_file = 'dataset_differentials_' + datetime.now().strftime("%Y_%m_%d-%I_%M
 output_file = join(output_path,output_file)
 
 writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
-df_diff_common.to_excel(writer, sheet_name='conmmon', index=True)
+df_diff_common.to_excel(writer, sheet_name='common', index=True)
 df_added_rows.to_excel(writer, sheet_name='added', index=True)
 df_removed_rows.to_excel(writer, sheet_name='deleted', index=True)
 
 
 workbook  = writer.book
-worksheet = writer.sheets['diff']
+worksheet = writer.sheets['common']
 worksheet.hide_gridlines(2)
 worksheet.set_default_row(15)
 
