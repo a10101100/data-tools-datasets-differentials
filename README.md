@@ -15,8 +15,8 @@ v2
 * relatively more useful in more scenarios
 
 
-v3 -- wip
+v3
 * v2 iterates over rows/columns, performance may suffer for larger datasets
 * also realistically, in larger datasets we are more interested in whats new / removed
-
-
+* using full dataframes instead of row by row iteration
+* currently testing with a larger dataset

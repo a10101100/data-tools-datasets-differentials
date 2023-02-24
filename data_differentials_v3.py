@@ -13,53 +13,25 @@ output_path = join(project_path,'output')
 file_curr = join(input_path,'source_B.xlsx')
 df_curr=pd.read_excel(file_curr)
 
+KEY_COLNAME = 'Country'
+
 
 ## You can specify your index here -- this sets the basis for comparison i.e. newly added rows, or removed.
-index_col = df_curr.columns[1]
 file_prev = join(input_path,'source_A.xlsx')
-df_prev=pd.read_excel(file_prev, index_col=index_col).fillna(0)
-df_curr=pd.read_excel(file_curr, index_col=index_col).fillna(0)
+df_prev=pd.read_excel(file_prev).fillna(0)
+df_curr=pd.read_excel(file_curr).fillna(0)
 
-
+df_added = df_curr[~df_curr[KEY_COLNAME].isin(df_prev[KEY_COLNAME])]
+df_removed = df_prev[~df_prev[KEY_COLNAME].isin(df_curr[KEY_COLNAME])]
+df_common = pd.merge(df_prev, df_curr, how ='inner', on=KEY_COLNAME)
 
 #@       >>> preparing output dataframe to show the differences i.e. from old value to new
-df_diff = df_curr.copy()
-removed_rows = []
-added_rows = []
-common_rows = []
-
-cols_prev = df_prev.columns
-cols_curr = df_curr.columns
-cols_common = list(set(cols_prev).intersection(cols_curr))
-
-for row in df_diff.index:
-    if (row in df_prev.index) and (row in df_curr.index):
-        print('existing row -- {}'.format(row))
-        common_rows.append(row)
-    else:
-        print('added row -- {}'.format(row))
-        added_rows.append(row)
-
-
-for row in df_prev.index:
-    if row not in df_curr.index:
-        print('removed row -- {}'.format(row))
-        removed_rows.append(row)
-        df_diff = df_diff.append(df_prev.loc[row,:])
-df_diff = df_diff.sort_index().fillna('')
-
-df_added_rows = df_curr.loc[df_curr.index.isin(added_rows)]
-df_removed_rows = df_prev.loc[df_prev.index.isin(removed_rows)]
-
-
-
-
-df_prev_common = df_prev.loc[df_prev.index.isin(common_rows)]
-df_curr_common = df_curr.loc[df_curr.index.isin(common_rows)]
+df_prev_common = df_prev[df_prev[KEY_COLNAME].isin(df_curr[KEY_COLNAME])]
+df_curr_common = df_curr[df_curr[KEY_COLNAME].isin(df_prev[KEY_COLNAME])]
 df_prev_common.equals(df_curr_common)
 cmp_val = df_prev_common.values == df_curr_common.values
 rows,cols=np.where(cmp_val==False)
-#@       >>> preparing output dataframe to show the differences i.e. from old value to new
+
 df_diff_common = df_prev_common.copy()
 for item in zip(rows,cols):
     df_diff_common.iloc[item[0], item[1]] = '{} --> {}'.format(df_prev_common.iloc[item[0], item[1]],df_curr_common.iloc[item[0], item[1]])
@@ -72,14 +44,14 @@ output_file = 'dataset_differentials_' + datetime.now().strftime("%Y_%m_%d-%I_%M
 output_file = join(output_path,output_file)
 
 writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
-df_diff_common.to_excel(writer, sheet_name='common', index=True)
-df_added_rows.to_excel(writer, sheet_name='added', index=True)
-df_removed_rows.to_excel(writer, sheet_name='deleted', index=True)
+df_diff_common.to_excel(writer, sheet_name='common_changes', index=False)
+df_added.to_excel(writer, sheet_name='added', index=False)
+df_removed.to_excel(writer, sheet_name='deleted', index=False)
 
 
 workbook  = writer.book
-
-worksheet = writer.sheets['common']
+worksheet = writer.sheets['common_changes']
+worksheet.set_tab_color('#FF9900')  # Orange
 worksheet.hide_gridlines(2)
 worksheet.set_default_row(15)
 
@@ -114,7 +86,13 @@ worksheet.conditional_format('A1:ZZ1000000', {'type': 'text',
 #     for y in removed_rows:
 #         if y == row:
 #             worksheet.set_row(rownum + 1, 15, removed_fmt)
-    
+
+
+added_sht = writer.sheets['added']
+added_sht.set_tab_color('green')
+
+removed_sht = writer.sheets['deleted']
+removed_sht.set_tab_color('red')
 
 writer.save()
 print('differential report generated!')
