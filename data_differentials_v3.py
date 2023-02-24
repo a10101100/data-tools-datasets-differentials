@@ -6,9 +6,6 @@ import numpy as np
 
 start_time = datetime.now() 
 
-# INSERT YOUR CODE 
-
-
 
 project_path = dirname(__file__)
 input_path = join(project_path,'input')
