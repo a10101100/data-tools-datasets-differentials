@@ -45,7 +45,7 @@ output_file = 'dataset_differentials_' + datetime.now().strftime("%Y_%m_%d-%I_%M
 output_file = join(output_path,output_file)
 
 writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
-d_diff_common.to_excel(writer, sheet_name='common_changes', index=False)
+d_diff_common.to_excel(writer, sheet_name='common_changes', index=True)
 d_added.to_excel(writer, sheet_name='added', index=False)
 d_removed.to_excel(writer, sheet_name='deleted', index=False)
 
