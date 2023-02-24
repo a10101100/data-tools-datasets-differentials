@@ -78,6 +78,7 @@ df_removed_rows.to_excel(writer, sheet_name='deleted', index=True)
 
 
 workbook  = writer.book
+
 worksheet = writer.sheets['common']
 worksheet.hide_gridlines(2)
 worksheet.set_default_row(15)
