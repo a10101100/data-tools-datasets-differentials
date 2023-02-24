@@ -4,6 +4,12 @@ import pandas as pd
 from datetime import datetime
 import numpy as np
 
+start_time = datetime.now() 
+
+# INSERT YOUR CODE 
+
+
+
 project_path = dirname(__file__)
 input_path = join(project_path,'input')
 output_path = join(project_path,'output')
@@ -114,3 +120,5 @@ worksheet.conditional_format('A1:ZZ1000000', {'type': 'text',
 
 writer.save()
 print('differential report generated!')
+time_elapsed = datetime.now() - start_time 
+print('Time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
