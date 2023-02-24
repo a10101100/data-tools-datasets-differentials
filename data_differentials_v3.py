@@ -23,11 +23,12 @@ df_curr=pd.read_excel(file_curr).fillna(0)
 
 df_added = df_curr[~df_curr[KEY_COLNAME].isin(df_prev[KEY_COLNAME])]
 df_removed = df_prev[~df_prev[KEY_COLNAME].isin(df_curr[KEY_COLNAME])]
-df_common = pd.merge(df_prev, df_curr, how ='inner', on=KEY_COLNAME)
 
 #@       >>> preparing output dataframe to show the differences i.e. from old value to new
-df_prev_common = df_prev[df_prev[KEY_COLNAME].isin(df_curr[KEY_COLNAME])]
-df_curr_common = df_curr[df_curr[KEY_COLNAME].isin(df_prev[KEY_COLNAME])]
+df_prev.set_index(KEY_COLNAME, inplace=True)
+df_curr.set_index(KEY_COLNAME, inplace=True)
+df_prev_common = df_prev[df_prev.index.isin(df_curr.index)]
+df_curr_common = df_curr[df_curr.index.isin(df_prev.index)]
 df_prev_common.equals(df_curr_common)
 cmp_val = df_prev_common.values == df_curr_common.values
 rows,cols=np.where(cmp_val==False)
@@ -75,18 +76,6 @@ worksheet.conditional_format('A1:ZZ1000000', {'type': 'text',
     'criteria': 'containing',
     'value':'-->',
     'format': highlighter_fmt})
-
-
-# #     added / removed rows' highlight
-# for rownum in range(df_diff.shape[0]):
-#     row = df_diff.index[rownum]
-#     for x in added_rows:
-#         if x == row:
-#             worksheet.set_row(rownum + 1, 15, added_fmt)
-#     for y in removed_rows:
-#         if y == row:
-#             worksheet.set_row(rownum + 1, 15, removed_fmt)
-
 
 added_sht = writer.sheets['added']
 added_sht.set_tab_color('green')
