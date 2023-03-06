@@ -10,14 +10,20 @@ start_time = datetime.now()
 project_path = dirname(__file__)
 input_path = join(project_path,'input')
 output_path = join(project_path,'output')
-file_curr = join(input_path,'source_B.xlsx')
-d_curr=pd.read_excel(file_curr)
 
-KEY_COLNAME = 'Country'
+
+
 
 
 ## You can specify your index here -- this sets the basis for comparison i.e. newly added rows, or removed.
+KEY_COLNAME = 'Country'
 file_prev = join(input_path,'source_A.xlsx')
+file_curr = join(input_path,'source_B.xlsx')
+
+
+
+
+d_curr=pd.read_excel(file_curr)
 d_prev=pd.read_excel(file_prev).fillna(0)
 d_curr=pd.read_excel(file_curr).fillna(0)
 
@@ -29,6 +35,15 @@ d_prev.set_index(KEY_COLNAME, inplace=True)
 d_curr.set_index(KEY_COLNAME, inplace=True)
 d_prev_common = d_prev[d_prev.index.isin(d_curr.index)]
 d_curr_common = d_curr[d_curr.index.isin(d_prev.index)]
+
+
+d_prev_common = d_prev_common.index.astype(str)
+d_curr_common = d_curr_common.index.astype(str)
+
+d_prev_common.sort_index(inplace=True)
+d_curr_common.sort_index(inplace=True)
+
+
 d_prev_common.equals(d_curr_common)
 cmp_val = d_prev_common.values == d_curr_common.values
 rows,cols=np.where(cmp_val==False)
